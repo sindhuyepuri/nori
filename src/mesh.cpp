@@ -36,43 +36,27 @@ float Mesh::surfaceArea(uint32_t index) const {
     return 0.5f * Vector3f((p1 - p0).cross(p2 - p0)).norm();
 }
 
+/* IMPLEMENT ME:
+    Note: m_V -> vertex positions
+          m_N -> vertex normals
+          
+          Ray3f r;
+          r.d -> direction Vector3f
+          r.o -> position Point3f
+
+          glm defines Vector3f.dot(Vector3f)
+                      Vector3f.cross(Vector3f)
+ */
 bool Mesh::rayIntersect(uint32_t index, const Ray3f &ray, float &u, float &v, float &t) const {
     uint32_t i0 = m_F(0, index), i1 = m_F(1, index), i2 = m_F(2, index);
     const Point3f p0 = m_V.col(i0), p1 = m_V.col(i1), p2 = m_V.col(i2);
 
-    /* Find vectors for two edges sharing v[0] */
-    Vector3f edge1 = p1 - p0, edge2 = p2 - p0;
+    // TODO: ray-triangle intersection
+    //       set barycentric coordinates u,v
+    //       set intersection time t
+    //       return true if intersects, else false
 
-    /* Begin calculating determinant - also used to calculate U parameter */
-    Vector3f pvec = ray.d.cross(edge2);
-
-    /* If determinant is near zero, ray lies in plane of triangle */
-    float det = edge1.dot(pvec);
-
-    if (det > -1e-8f && det < 1e-8f)
-        return false;
-    float inv_det = 1.0f / det;
-
-    /* Calculate distance from v[0] to ray origin */
-    Vector3f tvec = ray.o - p0;
-
-    /* Calculate U parameter and test bounds */
-    u = tvec.dot(pvec) * inv_det;
-    if (u < 0.0 || u > 1.0)
-        return false;
-
-    /* Prepare to test V parameter */
-    Vector3f qvec = tvec.cross(edge1);
-
-    /* Calculate V parameter and test bounds */
-    v = ray.d.dot(qvec) * inv_det;
-    if (v < 0.0 || u + v > 1.0)
-        return false;
-
-    /* Ray intersects triangle -> compute t */
-    t = edge2.dot(qvec) * inv_det;
-
-    return t >= ray.mint && t <= ray.maxt;
+    return false;
 }
 
 BoundingBox3f Mesh::getBoundingBox(uint32_t index) const {
